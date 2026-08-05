@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الطلبات - لواء العزم وفرسان التحدي</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --accent-color: #2e7d32;
+            --bg-color: #ffffff;
+            --card-bg: #f9f9f9;
+            --item-bg: #ffffff;
+            --text-color: #222222;
+            --subtext-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(46, 125, 50, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(46, 125, 50, 0.05) 0%, transparent 20%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232e7d32' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed #ddd;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .custom-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .custom-logo-svg {
+            width: 170px;
+            height: auto;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.12));
+        }
+
+        .header h2 {
+            margin: 5px 0 15px 0;
+            color: var(--accent-color);
+            font-size: 1.5em;
+        }
+
+        .auto-slider-container {
+            position: relative;
+            width: 100%;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s ease-in-out;
+            box-sizing: border-box;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0 10px;
+        }
+
+        .text-card.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .text-card.exit {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        .text-card p {
+            margin: 0;
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: var(--subtext-color);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .section-title {
+            color: var(--accent-color);
+            border-right: 4px solid var(--accent-color);
+            padding-right: 10px;
+            margin-top: 25px;
+            font-size: 1.25em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .menu-card {
+            background-color: var(--item-bg);
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .item-icon {
+            font-size: 1.8em;
+            margin-bottom: 6px;
+        }
+
+        .menu-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.95em;
+            color: #333;
+        }
+
+        .btn-add {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 80%;
+        }
+
+        .btn-add:hover {
+            background-color: #1b5e20;
+        }
+
+        .btn-add:active {
+            transform: scale(0.95);
+        }
+
+        .cart-section {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            color: #333;
+        }
+
+        .cart-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-controls button {
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+            border: 1px solid #c8e6c9;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-controls button:hover {
+            background-color: #c8e6c9;
+        }
+
+        .btn-delete {
+            color: #d32f2f;
+            background: none !important;
+            border: none !important;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            background-color: #fcfcfc;
+            color: #333;
+            box-sizing: border-box;
+            margin-top: 15px;
+            font-size: 1em;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-send {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-send:hover {
+            background-color: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="custom-logo-container">
+            <svg class="custom-logo-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 150 15 C 230 15, 275 60, 275 145 C 275 225, 205 275, 150 290 C 95 275, 25 225, 25 145 C 25 60, 70 15, 150 15 Z" fill="#fcfcf9" stroke="#1c3b2b" stroke-width="4"/>
+                <path d="M 150 22 C 224 22, 267 64, 267 145 C 267 219, 201 266, 150 280 C 99 266, 33 219, 33 145 C 33 64, 76 22, 150 22 Z" fill="none" stroke="#c5a059" stroke-width="2"/>
+
+                <g id="real-swords">
+                    <g transform="rotate(35 150 120)">
+                        <path d="M 146 30 C 148 70, 149 110, 145 150 L 155 150 C 151 110, 152 70, 150 30 Z" fill="url(#blade-grad)" stroke="#1c3b2b" stroke-width="1.5"/>
+                        <path d="M 150 30 Q 150 90 150 150" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <path d="M 130 150 C 145 147, 155 147, 170 150 C 172 154, 168 156, 150 155 C 132 156, 128 154, 130 150 Z" fill="#c5a059" stroke="#1c3b2b" stroke-width="1.5"/>
+                        <rect x="146" y="155" width="8" height="28" rx="2" fill="#1c3b2b"/>
+                        <line x1="146" y1="162" x2="154" y2="162" stroke="#c5a059" stroke-width="1"/>
+                        <line x1="146" y1="169" x2="154" y2="169" stroke="#c5a059" stroke-width="1"/>
+                        <line x1="146" y1="176" x2="154" y2="176" stroke="#c5a059" stroke-width="1"/>
+                        <circle cx="150" cy="186" r="6" fill="#c5a059" stroke="#1c3b2b" stroke-width="1.5"/>
+                    </g>
+
+                    <g transform="rotate(-35 150 120)">
+                        <path d="M 146 30 C 148 70, 149 110, 145 150 L 155 150 C 151 110, 152 70, 150 30 Z" fill="url(#blade-grad)" stroke="#1c3b2b" stroke-width="1.5"/>
+                        <path d="M 150 30 Q 150 90 150 150" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <path d="M 130 150 C 145 147, 155 147, 170 150 C 172 154, 168 156, 150 155 C 132 156, 128 154, 130 150 Z" fill="#c5a059" stroke="#1c3b2b" stroke-width="1.5"/>
+                        <rect x="146" y="155" width="8" height="28" rx="2" fill="#1c3b2b"/>
+                        <line x1="146" y1="162" x2="154" y2="162" stroke="#c5a059" stroke-width="1"/>
+                        <line x1="146" y1="169" x2="154" y2="169" stroke="#c5a059" stroke-width="1"/>
+                        <line x1="146" y1="176" x2="154" y2="176" stroke="#c5a059" stroke-width="1"/>
+                        <circle cx="150" cy="186" r="6" fill="#c5a059" stroke="#1c3b2b" stroke-width="1.5"/>
+                    </g>
+                </g>
+
+                <defs>
+                    <linearGradient id="blade-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#e0e0e0"/>
+                        <stop offset="50%" stop-color="#ffffff"/>
+                        <stop offset="100%" stop-color="#b0b0b0"/>
+                    </linearGradient>
+                </defs>
+
+                <text x="150" y="200" font-family="'Segoe UI', Tahoma, sans-serif" font-size="20" font-weight="bold" fill="#c5a059" text-anchor="middle">أُسْرَة</text>
+                <text x="150" y="242" font-family="'Segoe UI', Tahoma, sans-serif" font-size="36" font-weight="900" fill="#1c3b2b" text-anchor="middle">فُرْسَان</text>
+                <text x="150" y="266" font-family="'Segoe UI', Tahoma, sans-serif" font-size="16" font-weight="bold" fill="#c5a059" text-anchor="middle">ـ اللواء ـ</text>
+            </svg>
+        </div>
+
+        <h2>أهلاً وسهلاً بكم</h2>
+
+        <div class="auto-slider-container">
+            <div class="text-card active">
+                <p>يتشرف فرسان اللواء باستقبالكم<br>حياكم الله في مجلسنا، ومكانكم في القلب قبل المكان<br>وجودكم شرف لنا، ونورتم بيتكم<br>نسعد بكم دائماً، ونسأل الله أن يجعل لقيانا لقياً مباركة</p>
+            </div>
+            <div class="text-card">
+                <p>يا هلا ويا مرحبا بالضيوف الغاليين ✨<br>من أسرة فرسان اللواء نقول لكم:<br>بيتكم عامر، ومجلسنا نور بوجودكم<br>تفضلوا على القهوة والطيب، والله يحيكم<br>وجودكم هو اللي يزيّن الجمع، فلا تحرمونا منكم</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- الأطباق الحلوة -->
+    <div class="section-title"><span>🍰</span> الأطباق الحلوة</div>
+    <div class="menu-grid">
+        <div class="menu-card">
+            <div class="item-icon">🌀</div>
+            <h4>سينابون</h4>
+            <button class="btn-add" onclick="addToCart('سينابون')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥮</div>
+            <h4>بسبوسة</h4>
+            <button class="btn-add" onclick="addToCart('بسبوسة')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍪</div>
+            <h4>كوكيز</h4>
+            <button class="btn-add" onclick="addToCart('كوكيز')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥞</div>
+            <h4>ميني بان كيك</h4>
+            <button class="btn-add" onclick="addToCart('ميني بان كيك')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍰</div>
+            <h4>حلا البسكوت</h4>
+            <button class="btn-add" onclick="addToCart('حلا البسكوت')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍫</div>
+            <h4>حلا شوكلاتة</h4>
+            <button class="btn-add" onclick="addToCart('حلا شوكلاتة')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍦</div>
+            <h4>حلا الأيسكريم</h4>
+            <button class="btn-add" onclick="addToCart('حلا الأيسكريم')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥐</div>
+            <h4>سفن ديز</h4>
+            <button class="btn-add" onclick="addToCart('سفن ديز')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍂</div>
+            <h4>حلا القرفة</h4>
+            <button class="btn-add" onclick="addToCart('حلا القرفة')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">❓</div>
+            <h4>حلا غامض 1</h4>
+            <button class="btn-add" onclick="addToCart('حلا غامض 1')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">❓</div>
+            <h4>حلا غامض 2</h4>
+            <button class="btn-add" onclick="addToCart('حلا غامض 2')">إضافة +</button>
+        </div>
+    </div>
+
+    <!-- الأطباق المالحة -->
+    <div class="section-title"><span>🥘</span> الأطباق المالحة</div>
+    <div class="menu-grid">
+        <div class="menu-card">
+            <div class="item-icon">🍲</div>
+            <h4>باشاميل</h4>
+            <button class="btn-add" onclick="addToCart('باشاميل')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍕</div>
+            <h4>بيتزا</h4>
+            <button class="btn-add" onclick="addToCart('بيتزا')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥣</div>
+            <h4>كشري</h4>
+            <button class="btn-add" onclick="addToCart('كشري')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍞</div>
+            <h4>باخمري</h4>
+            <button class="btn-add" onclick="addToCart('باخمري')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥗</div>
+            <h4>سلطة مكرونة</h4>
+            <button class="btn-add" onclick="addToCart('سلطة مكرونة')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍇</div>
+            <h4>ورق عنب</h4>
+            <button class="btn-add" onclick="addToCart('ورق عنب')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍲</div>
+            <h4>شاكرية</h4>
+            <button class="btn-add" onclick="addToCart('شاكرية')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍚</div>
+            <h4>مضغوط</h4>
+            <button class="btn-add" onclick="addToCart('مضغوط')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🧆</div>
+            <h4>كبة</h4>
+            <button class="btn-add" onclick="addToCart('كبة')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥐</div>
+            <h4>معجنات</h4>
+            <button class="btn-add" onclick="addToCart('معجنات')">إضافة +</button>
+        </div>
+    </div>
+
+    <!-- المشروبات -->
+    <div class="section-title"><span>☕</span> المشروبات</div>
+    <div class="menu-grid">
+        <div class="menu-card">
+            <div class="item-icon">🍎</div>
+            <h4>عصير تفاح</h4>
+            <button class="btn-add" onclick="addToCart('عصير تفاح')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🥭</div>
+            <h4>عصير مانجو</h4>
+            <button class="btn-add" onclick="addToCart('عصير مانجو')">إضافة +</button>
+        </div>
+        <div class="menu-card">
+            <div class="item-icon">🍹</div>
+            <h4>عصير مشكل</h4>
+            <button class="btn-add" onclick="addToCart('عصير مشكل')">إضافة +</button>
+        </div>
+    </div>
+
+    <!-- سلة الطلبات -->
+    <div class="cart-section">
+        <h3 class="cart-header"><span>🛒</span> قائمة طلباتك</h3>
+        <div id="cart-items">
+            <p style="color: #888; text-align: center;">لم تقم بإضافة أي عنصر بعد</p>
+        </div>
+        
+        <input type="text" id="customer-name" placeholder="أدخل اسمك الكريم هنا">
+        <button class="btn-send" onclick="sendToWhatsApp()">إرسال الطلب عبر واتساب 💬</button>
+    </div>
+</div>
+
+<script>
+    const cards = document.querySelectorAll('.text-card');
+    let currentIndex = 0;
+
+    setInterval(() => {
+        cards[currentIndex].classList.remove('active');
+        cards[currentIndex].classList.add('exit');
+
+        setTimeout(() => {
+            cards[currentIndex].classList.remove('exit');
+            currentIndex = (currentIndex + 1) % cards.length;
+            cards[currentIndex].classList.add('active');
+        }, 800);
+    }, 8000);
+
+    const whatsappNumber = "966571608494"; 
+    let cart = {};
+
+    function addToCart(itemName) {
+        cart[itemName] = (cart[itemName] || 0) + 1;
+        updateCartUI();
+    }
+
+    function changeQuantity(itemName, change) {
+        if (cart[itemName]) {
+            cart[itemName] += change;
+            if (cart[itemName] <= 0) {
+                delete cart[itemName];
+            }
+        }
+        updateCartUI();
+    }
+
+    function removeFromCart(itemName) {
+        delete cart[itemName];
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartContainer = document.getElementById('cart-items');
+        cartContainer.innerHTML = '';
+
+        if (Object.keys(cart).length === 0) {
+            cartContainer.innerHTML = '<p style="color: #888; text-align: center;">لم تقم بإضافة أي عنصر بعد</p>';
+            return;
+        }
+
+        for (const [item, qty] of Object.entries(cart)) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.innerHTML = `
+                <span>${item}</span>
+                <div class="cart-controls">
+                    <button onclick="changeQuantity('${item}', -1)">-</button>
+                    <span style="margin: 0 10px; font-weight: bold;">${qty}</span>
+                    <button onclick="changeQuantity('${item}', 1)">+</button>
+                    <button class="btn-delete" title="حذف" onclick="removeFromCart('${item}')">🗑️</button>
+                </div>
+            `;
+            cartContainer.appendChild(itemDiv);
+        }
+    }
+
+    function sendToWhatsApp() {
+        const nameInput = document.getElementById('customer-name').value.trim();
+
+        if (Object.keys(cart).length === 0) {
+            alert('الرجاء اختيار بعض الأطباق أولاً!');
+            return;
+        }
+
+        if (!nameInput) {
+            alert('الرجاء كتابة اسمك الكريم قبل إرسال الطلب.');
+            return;
+        }
+
+        let message = `السلام عليكم، أنا الضيف: ${nameInput}\n\n`;
+        message += `أرغب في طلب التالي:\n`;
+
+        for (const [item, qty] of Object.entries(cart)) {
+            message += `• ${item} (${qty})\n`;
+        }
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    }
+</script>
+
+</body>
+</html>
